@@ -20,13 +20,13 @@ console.log(`model=${model} nonce=${nonce} report_sha256=${sha256Hex(raw)} (api 
 
 let allOk = true;
 const print = (who, checks) => { for (const c of checks) { allOk &&= c.ok; console.log(`${c.ok ? 'PASS' : 'FAIL'} ${who} ${c.check} ${c.detail}`); } };
-print('gateway', await checkNearReport(body.gateway_attestation, nonce));
+print('gateway', (await checkNearReport(body.gateway_attestation, nonce)).checks);
 console.log(`     gateway signer ${body.gateway_attestation.signing_algo} ${body.gateway_attestation.signing_address}`);
 const cands = body.model_attestations ?? [];
 if (!cands.length) { console.log('FAIL model no model_attestations'); allOk = false; }
 for (const m of cands) {
-  print('model  ', await checkNearReport(m, nonce));
-  print('model  ', await checkGpu(m, nonce));
+  print('model  ', (await checkNearReport(m, nonce)).checks);
+  print('model  ', (await checkGpu(m, nonce)).checks);
   console.log(`     model signer ${m.signing_algo} ${m.signing_address} (${m.model_name})`);
 }
 if (process.argv.includes('--save')) {

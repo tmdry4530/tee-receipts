@@ -1,9 +1,0 @@
-{
-  "name": "tee-receipts-sandbox-test",
-  "private": true,
-  "type": "module",
-  "license": "MIT",
-  "description": "Runs the compiled wasm in a local NEAR sandbox node to prove env::ecrecover / env::ed25519_verify work on the real runtime",
-  "scripts": { "test": "node --test sandbox.test.mjs" },
-  "devDependencies": { "near-sandbox": "^0.3.4", "near-api-js": "^7.4.0" }
-}

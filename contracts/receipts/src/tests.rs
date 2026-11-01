@@ -141,3 +141,22 @@ fn only_owner_registers() {
     ctx(1, 1_000);
     register(&mut c, &vectors()[0]);
 }
+
+#[test]
+fn signer_history_keeps_rotated_keys() {
+    ctx(0, 1_000);
+    let mut c = Contract::new(accounts(0));
+    let vs: Vec<Value> = vectors().into_iter().filter(|v| v["signature_kind"] == "provider_tee").collect();
+    for v in &vs { register(&mut c, v); }
+    // re-register the first key (fresh attestation) -> history grows, current entry updated
+    ctx(0, 2_000);
+    c.register_signer(algo(&vs[0]), s(&vs[0], "signing_address"), kind(&vs[0]), s(&vs[0], "model_id"),
+        "22".repeat(32), NONCE.into(), 3600, None);
+    let model = s(&vs[0], "model_id");
+    assert_eq!(c.signer_history_len(model.clone()), 3);
+    let h = c.get_signer_history(model.clone(), None, None);
+    assert_eq!(h[0].attestation_hash, ATT);
+    assert_eq!(h[2].attestation_hash, "22".repeat(32));
+    assert_eq!(c.get_signer_history(model, Some(1), Some(1)).len(), 1);
+    assert_eq!(c.signer_history_len("other".into()), 0);
+}

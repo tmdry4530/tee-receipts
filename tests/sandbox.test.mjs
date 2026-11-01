@@ -1,14 +1,14 @@
-// Deploys target/near/tee_receipts_contract.wasm to a LOCAL near-sandbox node (no testnet,
+// Deploys contracts/receipts/res/tee_receipts_contract.wasm to a LOCAL near-sandbox node (no testnet,
 // no real keys) and checks the on-chain signature path with the real NEAR runtime.
-// Build first:  (cd .. && cargo near build non-reproducible-wasm --no-abi)
+// Rebuild the wasm with: npm run build:contract
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { Sandbox, DEFAULT_ACCOUNT_ID, DEFAULT_PRIVATE_KEY } from 'near-sandbox';
 import { Account, JsonRpcProvider, KeyPairSigner, teraToGas } from 'near-api-js';
 
-const wasm = readFileSync(new URL('../target/near/tee_receipts_contract.wasm', import.meta.url));
-const { vectors } = JSON.parse(readFileSync(new URL('../tests/fixtures/local_vectors.json', import.meta.url)));
+const wasm = readFileSync(new URL('../contracts/receipts/res/tee_receipts_contract.wasm', import.meta.url));
+const { vectors } = JSON.parse(readFileSync(new URL('../contracts/receipts/tests/fixtures/local_vectors.json', import.meta.url)));
 const ATT = '11'.repeat(32);
 const NONCE = '06e1c8d43eb0626192e0b99126fc248f73f5b7b6eabea359aa8f64983fa4dab7';
 

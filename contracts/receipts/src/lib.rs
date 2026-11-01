@@ -16,7 +16,7 @@
 //! Those checks run off-chain (client/), and the owner registers a signer only after
 //! they pass, together with the hash of the attestation report and its nonce.
 
-use near_sdk::store::LookupMap;
+use near_sdk::store::{LookupMap, Vector};
 use near_sdk::{env, near, require, AccountId, BorshStorageKey, PanicOnDefault};
 
 #[near(serializers = [borsh, json])]
@@ -75,6 +75,8 @@ enum StorageKey {
     Signers,
     Receipts,
     ByResponse,
+    SignerLog,
+    LogByModel,
 }
 
 #[near(contract_state)]
@@ -85,6 +87,10 @@ pub struct Contract {
     receipts: LookupMap<u64, Receipt>,
     by_response: LookupMap<String, u64>,
     next_id: u64,
+    /// append-only log of every registration (attested signer-key history)
+    signer_log: Vector<Signer>,
+    /// model_id ("" for the gateway) -> indexes into signer_log
+    log_by_model: LookupMap<String, Vec<u32>>,
 }
 
 const MAX_TTL_SECONDS: u64 = 7 * 24 * 3600;
@@ -164,6 +170,8 @@ impl Contract {
             receipts: LookupMap::new(StorageKey::Receipts),
             by_response: LookupMap::new(StorageKey::ByResponse),
             next_id: 0,
+            signer_log: Vector::new(StorageKey::SignerLog),
+            log_by_model: LookupMap::new(StorageKey::LogByModel),
         }
     }
 
@@ -208,6 +216,13 @@ impl Contract {
             expires_at_ms: now + ttl_seconds * 1000,
         };
         self.signers.insert(signer_key(signing_algo, &signing_address), signer.clone());
+        let idx = self.signer_log.len();
+        self.signer_log.push(signer.clone());
+        self.log_by_model.entry(signer.model_id.clone()).or_default().push(idx);
+        env::log_str(&format!(
+            "signer {} registered for '{}' attestation {}",
+            signer.signing_address, signer.model_id, signer.attestation_hash
+        ));
         signer
     }
 
@@ -279,6 +294,19 @@ impl Contract {
 
     pub fn receipt_count(&self) -> u64 {
         self.next_id
+    }
+
+    /// Every registration ever made for `model_id` ("" = gateway), oldest first.
+    /// Old entries stay after the TEE rotates its key, so old receipts remain explainable.
+    pub fn get_signer_history(&self, model_id: String, from_index: Option<u32>, limit: Option<u32>) -> Vec<Signer> {
+        let Some(idxs) = self.log_by_model.get(&model_id) else { return vec![] };
+        let from = from_index.unwrap_or(0) as usize;
+        let limit = limit.unwrap_or(50).min(100) as usize;
+        idxs.iter().skip(from).take(limit).filter_map(|i| self.signer_log.get(*i).cloned()).collect()
+    }
+
+    pub fn signer_history_len(&self, model_id: String) -> u32 {
+        self.log_by_model.get(&model_id).map(|v| v.len() as u32).unwrap_or(0)
     }
 
     /// Returns the receipt only if both hashes match what was anchored.

@@ -1,0 +1,33 @@
+{
+  "name": "tee-receipts",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "description": "Anchor NEAR AI Cloud TEE response signatures on NEAR, with an on-chain history of attested signer keys",
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "tee-receipts": "client/bin/tee-receipts.mjs"
+  },
+  "scripts": {
+    "demo:replay": "node client/scripts/demo.mjs --replay",
+    "demo:live": "node client/scripts/demo.mjs --live",
+    "demo:simulated": "node client/scripts/demo.mjs --simulated",
+    "node:start": "node client/bin/tee-receipts.mjs node:start",
+    "cli": "node client/bin/tee-receipts.mjs",
+    "probe:attestation": "node client/scripts/probe-attestation.mjs",
+    "fixtures:local": "node client/scripts/make-local-fixtures.mjs",
+    "test": "node --test --test-concurrency=1 tests/*.test.mjs",
+    "test:contract": "cd contracts/receipts && cargo test",
+    "build:contract": "cd contracts/receipts && cargo near build non-reproducible-wasm --no-abi && cp target/near/tee_receipts_contract.wasm res/"
+  },
+  "dependencies": {
+    "@phala/dcap-qvl": "^0.7.0",
+    "ethers": "^6.17.0",
+    "near-api-js": "^7.4.0",
+    "near-sandbox": "^0.3.4",
+    "tweetnacl": "^1.0.3"
+  }
+}
