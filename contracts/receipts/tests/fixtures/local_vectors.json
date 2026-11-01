@@ -1,0 +1,47 @@
+{
+  "note": "Throwaway keys generated locally by client/scripts/make-local-fixtures.mjs. Same signed-text format and algorithms as NEAR AI Cloud /v1/signature. Not real NEAR AI evidence.",
+  "vectors": [
+    {
+      "text": "Qwen/Qwen3.8-27B:0ce171474375c8678d9117c743ce1d5343deabccf0d62eb8ccdb7f2a36cf14f4:41689f555a0ff74c640d3294f396970feb53c2165daef22a9fa02d058341499e",
+      "signature": "0x5d83dc8d485417f126fd09039112e89e0d4ab6f14c8979ff60d545ae29c1df742b1883712e07ed352e7c240ec5772f36d8e3274a104888f8da398b00402967a11b",
+      "signing_address": "0xFeCFfc34B9960A069272309a67dfe420CcDE5E56",
+      "signing_algo": "ecdsa",
+      "signature_kind": "provider_tee",
+      "model_id": "Qwen/Qwen3.8-27B",
+      "request_hash": "0ce171474375c8678d9117c743ce1d5343deabccf0d62eb8ccdb7f2a36cf14f4",
+      "response_hash": "41689f555a0ff74c640d3294f396970feb53c2165daef22a9fa02d058341499e",
+      "signing_public_key": "1e7df8c50a957edd4099659561ad82503a943177d02b0ff345610a65a323ec8aeab567a5a6101e0cfe994e5d50f099b8cf11f8538913e5d3f72fbf14e9079176"
+    },
+    {
+      "text": "Qwen/Qwen3.8-27B:0ce171474375c8678d9117c743ce1d5343deabccf0d62eb8ccdb7f2a36cf14f4:41689f555a0ff74c640d3294f396970feb53c2165daef22a9fa02d058341499e",
+      "signature": "85ae76c3b317e19ea93024b057fb1ac904a8e9a2cab1968affe5f8effa2b10c705eb03a8fb933b77cf453816f96b7d20909e669a25cb0b9a1be38ef5f981cc0c",
+      "signing_address": "522e5a3a4d69e7d1d97b88e3e8079246317ee4879187520b768d4762fa404363",
+      "signing_algo": "ed25519",
+      "signature_kind": "provider_tee",
+      "model_id": "Qwen/Qwen3.8-27B",
+      "request_hash": "0ce171474375c8678d9117c743ce1d5343deabccf0d62eb8ccdb7f2a36cf14f4",
+      "response_hash": "41689f555a0ff74c640d3294f396970feb53c2165daef22a9fa02d058341499e"
+    },
+    {
+      "text": "0ce171474375c8678d9117c743ce1d5343deabccf0d62eb8ccdb7f2a36cf14f4:41689f555a0ff74c640d3294f396970feb53c2165daef22a9fa02d058341499e",
+      "signature": "0xd44a120b801b28113728e88f2b2e9de4d0b128b728436b617e8078c5d5aab23133eabf5975392ac63a9d3aeb774035e6acf6e94403ec8b3ee663a592d54dd3441b",
+      "signing_address": "0x3a686b1029A80ae1e7FcB05b1f3C4E40d634f718",
+      "signing_algo": "ecdsa",
+      "signature_kind": "gateway",
+      "model_id": "",
+      "request_hash": "0ce171474375c8678d9117c743ce1d5343deabccf0d62eb8ccdb7f2a36cf14f4",
+      "response_hash": "41689f555a0ff74c640d3294f396970feb53c2165daef22a9fa02d058341499e",
+      "signing_public_key": "6f86d128f72a20c4cd38f89592d7611fbd3eb74abd02de425172dc65ac7a193e95a06241501fb6a03e32bdb60d8c4f931e54718578bac89145b1b7a41ab80df6"
+    },
+    {
+      "text": "0ce171474375c8678d9117c743ce1d5343deabccf0d62eb8ccdb7f2a36cf14f4:41689f555a0ff74c640d3294f396970feb53c2165daef22a9fa02d058341499e",
+      "signature": "28e31e5699a3c3083c5980029610800b7d8c7c07a43c69abcee1eee47b61210b1b3731b447c51b62dbd7eff9b176d7ed58839fc5fad0c77aec633d5d89037406",
+      "signing_address": "86789b167be481142e02968e62f752b3fb91ffadedcad28e75e044fc3ee57136",
+      "signing_algo": "ed25519",
+      "signature_kind": "gateway",
+      "model_id": "",
+      "request_hash": "0ce171474375c8678d9117c743ce1d5343deabccf0d62eb8ccdb7f2a36cf14f4",
+      "response_hash": "41689f555a0ff74c640d3294f396970feb53c2165daef22a9fa02d058341499e"
+    }
+  ]
+}

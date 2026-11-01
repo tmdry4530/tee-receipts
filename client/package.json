@@ -1,0 +1,21 @@
+{
+  "name": "tee-receipts-client",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "description": "Off-chain verifier + CLI for TEE Receipts (NEAR AI Cloud attestation, response signatures, NEAR anchoring)",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "fixtures:local": "node scripts/make-local-fixtures.mjs",
+    "probe:attestation": "node scripts/probe-attestation.mjs",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@phala/dcap-qvl": "^0.7.0",
+    "ethers": "^6.13.0",
+    "tweetnacl": "^1.0.3"
+  }
+}
