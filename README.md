@@ -45,6 +45,24 @@ TEE_RECEIPTS_CONTRACT_ID=tee-receipts-chamdom.testnet npm run cli -- verify fixt
 Change one byte of the response (`--response tampered.json`) and it prints `NOT VERIFIED` (`no receipt for these bytes`).
 Note: signer registrations expire (this one at 2026-11-09 01:56 KST). Receipt #0 and the signer history stay on-chain after that; anchoring *new* receipts needs a fresh `attest`.
 
+### 2b. Verify in your browser (no install beyond Node, no key, no wallet)
+```bash
+npm ci && npm run web      # static server for web/ -> open http://127.0.0.1:8787/web/
+```
+The page loads `fixtures/testnet/receipt-bundle.json` and shows a **VERIFIED / NOT VERIFIED** checklist:
+| Where | Check |
+| --- | --- |
+| browser | `sha256` of the exact request and response bytes equals the bundle hashes |
+| browser | the signed text `model:sha256(req):sha256(resp)` rebuilt from those bytes equals the TEE-signed text |
+| browser | EIP-191 `ecrecover` of the TEE signature gives the signer address (vendored `@noble/curves`, `web/vendor/`) |
+| NEAR (view) | `verify_receipt(sha256 req, sha256 resp)` returns the anchored receipt (#0) |
+| NEAR (view) | `check_response_signature`: the contract re-runs the signature check itself |
+| NEAR (view) | receipt signer / signature equal the bundle's; the signer was in `get_signer_history` with this attestation hash when the receipt was anchored; attestation hash equals the saved report hash |
+
+Buttons: **Tamper one byte** flips one letter in the response (e.g. byte 160 `u` → `U`) and re-checks: the response hash, the signed text, `verify_receipt` and `check_response_signature` fail → **NOT VERIFIED**. **Reset bytes** restores it. You can also edit the response text by hand, open another bundle file, or paste one. The signer-history table lists every attested key for the model and the gateway, marked `active` or `expired (kept)`.
+The page only sends read-only JSON-RPC `query` calls to `https://rpc.testnet.near.org` (change RPC/contract under "Network", or `?rpc=…&contract=…&bundle=…`). Prompt and reply never leave the browser.
+Plain HTML + ES modules, no build step, relative paths only: it also works from GitHub Pages (branch `main`, folder `/`) at `https://tmdry4530.github.io/tee-receipts/web/` once Pages is enabled (it is not enabled yet).
+
 Deploy your own:
 ```bash
 NEAR_ACCOUNT_ID=<you>.testnet NEAR_CREDENTIALS_FILE=~/.near-credentials/testnet/<you>.testnet.json npm run deploy:testnet
@@ -63,6 +81,7 @@ npm run cli -- anchor .tee-receipts/receipts/<chat_id>.json && npm run cli -- ve
 | `npm run cli -- anchor <bundle>` | `submit_receipt`: stored only if the signature recovers to a registered, unexpired signer for that model |
 | `npm run cli -- verify <bundle> [--response f]` | Re-hash the bytes, check the signature off-chain, `verify_receipt` on-chain, signer + attestation in history |
 | Change one byte of the response | No receipt matches; `submit_receipt` rejects it: `signature does not verify` |
+| `npm run web`, open `/web/` | Browser verify page: receipt #0 on testnet → VERIFIED; **Tamper one byte** → NOT VERIFIED (§2b) |
 | `npm run cli -- history --model Qwen/Qwen3.8-27B` | Every attested signer key ever registered for the model (`--model ""` = gateway), kept after rotation |
 
 ## 4. How NEAR is used
@@ -73,7 +92,7 @@ npm run cli -- anchor .tee-receipts/receipts/<chat_id>.json && npm run cli -- ve
 ```
 NEAR AI Cloud ──attestation report──▶ client: verify TDX + NVIDIA off-chain ──register_signer──▶ contract (owner)
 NEAR AI Cloud ──reply bytes + TEE signature──▶ client: receipt bundle ──submit_receipt──▶ contract (anyone)
-verifier: bytes ──sha256──▶ verify_receipt ──▶ receipt + signer + attestation hash from history
+verifier (CLI or web/ page): bytes ──sha256──▶ verify_receipt ──▶ receipt + signer + attestation hash from history
 ```
 Contract (`contracts/receipts`):
 - `register_signer(signing_algo, signing_address, kind, model_id, attestation_hash, nonce, ttl_seconds, signing_public_key?)`, owner only. It appends to the signer history.
@@ -95,7 +114,9 @@ TODO.
 
 ## 8. Tests
 ```bash
-npm test                 # offline: saved evidence re-verifies, no secrets in fixtures, real wasm on a local node (anchor, verify, tamper rejected)
+npm test                 # offline: browser verifier logic on the testnet bundle, saved evidence re-verifies, no secrets in fixtures, real wasm on a local node (anchor, verify, tamper rejected)
+npm run test:web         # headless Chromium (playwright-core) on web/ against REAL testnet: VERIFIED, tamper -> NOT VERIFIED, reset -> VERIFIED
+                         # needs network + a Chromium: `npx playwright-core install chromium` or CHROME_PATH=/usr/bin/google-chrome
 npm run test:contract    # cargo unit tests (needs Rust)
 npm run build:contract   # rebuild the wasm into contracts/receipts/res/ (needs cargo-near)
 ```
@@ -110,7 +131,7 @@ npm run build:contract   # rebuild the wasm into contracts/receipts/res/ (needs 
 - The local node is a throwaway sandbox. Tx hashes and receipt ids from it are not on a public network. The testnet run in §2a is on the public NEAR testnet; the contract owner (who registers signers) is our own account, so trust in a registered signer rests on that account having run the off-chain checks, which anyone can redo from the saved evidence.
 
 ## 10. Built during the hackathon / libraries / AI tools
-All code in this repo was written during the hackathon. Libraries: near-sdk, near-api-js, near-sandbox, ethers, tweetnacl, @phala/dcap-qvl. Verification logic follows the NEAR AI Cloud docs (https://docs.near.ai/cloud/verification). AI coding assistants were used. TODO: MIT notice for any ported example code.
+All code in this repo was written during the hackathon. Libraries: near-sdk, near-api-js, near-sandbox, ethers, tweetnacl, @phala/dcap-qvl; verify page: @noble/curves + @noble/hashes 2.4.0 (MIT, vendored unmodified as an esbuild bundle in `web/vendor/`, license in `web/vendor/LICENSE-noble`); playwright-core (dev, headless test only). Verification logic follows the NEAR AI Cloud docs (https://docs.near.ai/cloud/verification). AI coding assistants were used. TODO: MIT notice for any ported example code.
 
 ## 11. Disclosure
 The same author also submitted agent-pay (https://github.com/tmdry4530/agent-pay-public, tracks security + agents). The projects share no code and solve different problems.
