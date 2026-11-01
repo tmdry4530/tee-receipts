@@ -1,6 +1,6 @@
 # TEE Receipts
 
-> **Status: work in progress (NEAR hackathon, tracks: privacy + open).** Testnet deployment is pending.
+> **Status: NEAR hackathon (tracks: privacy + open). Live on NEAR testnet:** contract [`tee-receipts-chamdom.testnet`](https://testnet.nearblocks.io/address/tee-receipts-chamdom.testnet), with a real NEAR AI Cloud receipt anchored and verified (see §2a).
 
 ## 1. One line
 Turn a NEAR AI Cloud answer into a permanent, third-party-checkable receipt on NEAR: the contract re-checks the TEE signature on-chain and keeps a timestamped history of attested signer keys, so a receipt still verifies after the enclave rotates its key.
@@ -21,6 +21,36 @@ Other modes:
 NEAR_AI_API_KEY=... npm run demo:live -- [--model Qwen/Qwen3.8-27B] [--max-tokens 64] [--save-fixtures]
                          # REAL: fresh attestation, real completion, real TEE signature, anchored on a local node
 npm run demo:simulated   # offline fallback: local throwaway signer, labelled SIMULATED everywhere
+```
+
+## 2a. Live on NEAR testnet
+Contract: [`tee-receipts-chamdom.testnet`](https://testnet.nearblocks.io/address/tee-receipts-chamdom.testnet) (owner = same account). Real run on 2026-11-02 (KST), model `Qwen/Qwen3.8-27B`, 16 completion tokens:
+
+| Step | Tx |
+| --- | --- |
+| Deploy wasm (`contracts/receipts/res/`) | [`5GKh9fQH…`](https://testnet.nearblocks.io/txns/5GKh9fQHgsQ9HmuWzDF3ckvXTKxbdDXP175kxZp2RZpg) |
+| `new { owner }` | [`R2s36BHL…`](https://testnet.nearblocks.io/txns/R2s36BHLC2UhKag774GUQsjuG86KVcUoKvZjLRjNkMF) |
+| `register_signer` gateway `0xb98a789c…` (fresh attestation, all TDX + NVIDIA checks PASS) | [`3w4XHJQc…`](https://testnet.nearblocks.io/txns/3w4XHJQc4mZKfybm6Xjf6TRf7aLb1hpUZjEVwUs7RE9J) |
+| `register_signer` model signer `0x835ab53d…` for `Qwen/Qwen3.8-27B` | [`EJtPscTW…`](https://testnet.nearblocks.io/txns/EJtPscTW2EJjuktH56TKYS9hrr2VbvQrq3Mw5mGyXkRs) |
+| `submit_receipt` → receipt #0 (signature re-checked on-chain, 2.52 Tgas) | [`BGqt67iv…`](https://testnet.nearblocks.io/txns/BGqt67ivp3aGNKLwBMtyjJdhLnzZs1m1pyo8r7hpNGiK) |
+
+The receipt bundle (exact request/response bytes + TEE signature) is `fixtures/testnet/receipt-bundle.json`; the attestation it was registered from is `fixtures/testnet/attestation-evidence.json` (attestation hash `fd320d9f…`).
+
+Verify it yourself (read-only, no key, no NEAR account):
+```bash
+npm ci
+TEE_RECEIPTS_CONTRACT_ID=tee-receipts-chamdom.testnet npm run cli -- verify fixtures/testnet/receipt-bundle.json
+# -> re-hashes the bytes, checks the signature off-chain, then verify_receipt / get_signer_history on testnet: VERIFIED
+```
+Change one byte of the response (`--response tampered.json`) and it prints `NOT VERIFIED` (`no receipt for these bytes`).
+Note: signer registrations expire (this one at 2026-11-09 01:56 KST). Receipt #0 and the signer history stay on-chain after that; anchoring *new* receipts needs a fresh `attest`.
+
+Deploy your own:
+```bash
+NEAR_ACCOUNT_ID=<you>.testnet NEAR_CREDENTIALS_FILE=~/.near-credentials/testnet/<you>.testnet.json npm run deploy:testnet
+export TEE_RECEIPTS_CONTRACT_ID=<you>.testnet NEAR_ACCOUNT_ID=<you>.testnet NEAR_CREDENTIALS_FILE=...
+npm run cli -- attest --model Qwen/Qwen3.8-27B && NEAR_AI_API_KEY=... npm run cli -- ask --model Qwen/Qwen3.8-27B --prompt "hi" --max-tokens 16
+npm run cli -- anchor .tee-receipts/receipts/<chat_id>.json && npm run cli -- verify .tee-receipts/receipts/<chat_id>.json
 ```
 
 ## 3. Do X → see Y
@@ -74,10 +104,10 @@ npm run build:contract   # rebuild the wasm into contracts/receipts/res/ (needs 
 - **The primary path is real.** `demo:live` and the CLI fetch a fresh attestation with our own nonce, run a real NEAR AI Cloud completion, fetch its real TEE signature, and anchor it.
 - **Saved fixtures.** `fixtures/demo/attestation-evidence.json` is a real attestation report fetched from `cloud-api.near.ai`. `fixtures/demo/receipt-bundle.json` is saved by `demo:live --save-fixtures`; it holds the exact request/response bytes and the real signature, and never an API key or auth header (`npm test` checks this).
 - **What replay re-checks offline.** It re-checks the Intel TDX quote against the Intel collateral saved at fetch time ("as of" that time, not now). It reuses the recorded NVIDIA NRAS verdict without re-checking the JWT signature offline. The response signature and every on-chain check run for real.
-- **Fallback when no real receipt is saved.** If no real receipt fixture exists, replay uses a SIMULATED receipt on top of the real attestation and says so. **Current state:** our NEAR AI account's key works for attestation, but completions return `402 no_limit_configured` (no spending limit / credits set). No real receipt is saved yet.
+- **Fallback when no real receipt is saved.** If no real receipt fixture exists, replay uses a SIMULATED receipt on top of the real attestation and says so. **Current state:** real receipts are saved: `fixtures/demo/receipt-bundle.json` (anchored on a local node) and `fixtures/testnet/receipt-bundle.json` (anchored on NEAR testnet, §2a). Replay uses the real one.
 - **`--simulated`** uses a local throwaway key and model id `SIMULATED/not-near-ai` with a zero attestation hash. It is labelled everywhere and is not evidence that NEAR AI produced anything.
 - Contract unit-test vectors (`contracts/receipts/tests/fixtures/local_vectors.json`) use throwaway local keys in the NEAR AI signature format.
-- The local node is a throwaway sandbox. Tx hashes and receipt ids from it are not on a public network.
+- The local node is a throwaway sandbox. Tx hashes and receipt ids from it are not on a public network. The testnet run in §2a is on the public NEAR testnet; the contract owner (who registers signers) is our own account, so trust in a registered signer rests on that account having run the off-chain checks, which anyone can redo from the saved evidence.
 
 ## 10. Built during the hackathon / libraries / AI tools
 All code in this repo was written during the hackathon. Libraries: near-sdk, near-api-js, near-sandbox, ethers, tweetnacl, @phala/dcap-qvl. Verification logic follows the NEAR AI Cloud docs (https://docs.near.ai/cloud/verification). AI coding assistants were used. TODO: MIT notice for any ported example code.

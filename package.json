@@ -21,6 +21,7 @@
     "fixtures:local": "node client/scripts/make-local-fixtures.mjs",
     "test": "node --test --test-concurrency=1 tests/*.test.mjs",
     "test:contract": "cd contracts/receipts && cargo test",
+    "deploy:testnet": "node client/scripts/deploy-testnet.mjs",
     "build:contract": "cd contracts/receipts && cargo near build non-reproducible-wasm --no-abi && cp target/near/tee_receipts_contract.wasm res/"
   },
   "dependencies": {

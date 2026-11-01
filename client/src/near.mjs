@@ -6,27 +6,37 @@ export const LOCAL_NODE_FILE = new URL('../../.tee-receipts/local-node.json', im
 
 /** Config from env (testnet etc.) or from the running local node written by `node:start`. */
 export function loadConfig() {
-  if (process.env.TEE_RECEIPTS_CONTRACT_ID && process.env.NEAR_ACCOUNT_ID && process.env.NEAR_PRIVATE_KEY) {
+  const env = process.env;
+  // Private key: NEAR_PRIVATE_KEY, or NEAR_CREDENTIALS_FILE pointing at a near-cli credentials JSON ({ private_key }).
+  const privateKey = env.NEAR_PRIVATE_KEY
+    || (env.NEAR_CREDENTIALS_FILE ? JSON.parse(readFileSync(env.NEAR_CREDENTIALS_FILE, 'utf8')).private_key : undefined);
+  if (env.TEE_RECEIPTS_CONTRACT_ID && env.NEAR_ACCOUNT_ID && privateKey) {
     return {
-      network: process.env.NEAR_NETWORK ?? 'testnet',
-      rpcUrl: process.env.NEAR_RPC_URL ?? 'https://rpc.testnet.near.org',
-      accountId: process.env.NEAR_ACCOUNT_ID, privateKey: process.env.NEAR_PRIVATE_KEY,
-      contractId: process.env.TEE_RECEIPTS_CONTRACT_ID,
+      network: env.NEAR_NETWORK ?? 'testnet',
+      rpcUrl: env.NEAR_RPC_URL ?? 'https://rpc.testnet.near.org',
+      accountId: env.NEAR_ACCOUNT_ID, privateKey,
+      contractId: env.TEE_RECEIPTS_CONTRACT_ID,
     };
   }
+  if (env.TEE_RECEIPTS_CONTRACT_ID && !privateKey) {
+    // Read-only: views (verify, history) need no key.
+    return { network: env.NEAR_NETWORK ?? 'testnet', rpcUrl: env.NEAR_RPC_URL ?? 'https://rpc.testnet.near.org',
+      accountId: null, privateKey: null, contractId: env.TEE_RECEIPTS_CONTRACT_ID };
+  }
   if (existsSync(LOCAL_NODE_FILE)) return JSON.parse(readFileSync(LOCAL_NODE_FILE, 'utf8'));
-  throw new Error('No NEAR config: run `npm run node:start` in another terminal, or set NEAR_ACCOUNT_ID/NEAR_PRIVATE_KEY/TEE_RECEIPTS_CONTRACT_ID');
+  throw new Error('No NEAR config: run `npm run node:start` in another terminal, or set TEE_RECEIPTS_CONTRACT_ID (+ NEAR_ACCOUNT_ID and NEAR_PRIVATE_KEY or NEAR_CREDENTIALS_FILE to send transactions)');
 }
 
 export function connect(cfg) {
   const provider = new JsonRpcProvider({ url: cfg.rpcUrl });
-  const account = new Account(cfg.accountId, provider, KeyPairSigner.fromSecretKey(cfg.privateKey));
+  const account = cfg.privateKey ? new Account(cfg.accountId, provider, KeyPairSigner.fromSecretKey(cfg.privateKey)) : null;
   const view = async (method, args = {}) => {
     const r = await provider.callFunction({ contractId: cfg.contractId, method, args });
     return r === undefined ? null : r;
   };
   /** Sends a function call; returns { value, txHash, gasTgas, logs }. Throws with the contract panic message. */
   const call = async (method, args, tgas = '100') => {
+    if (!account) throw new Error('read-only config: set NEAR_ACCOUNT_ID and NEAR_PRIVATE_KEY or NEAR_CREDENTIALS_FILE');
     const outcome = await account.signAndSendTransaction({
       receiverId: cfg.contractId, actions: [actions.functionCall(method, args, teraToGas(tgas), 0n)],
     });

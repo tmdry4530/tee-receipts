@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// tee-receipts CLI. Network config: `node:start` (local sandbox) or env NEAR_ACCOUNT_ID/NEAR_PRIVATE_KEY/TEE_RECEIPTS_CONTRACT_ID.
+// tee-receipts CLI. Network config: `node:start` (local sandbox) or env TEE_RECEIPTS_CONTRACT_ID (+ NEAR_ACCOUNT_ID and NEAR_PRIVATE_KEY or NEAR_CREDENTIALS_FILE to send txs).
 import { readFileSync, writeFileSync, mkdirSync, rmSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';

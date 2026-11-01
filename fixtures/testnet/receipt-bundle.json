@@ -1,0 +1,39 @@
+{
+ "type": "tee-receipts/receipt-bundle/v1",
+ "simulated": false,
+ "model": "Qwen/Qwen3.8-27B",
+ "chat_id": "21320b5259914676b652bf753e0acb1c",
+ "created_at": "2026-11-01T16:56:21.632Z",
+ "usage": {
+  "prompt_tokens": 58,
+  "total_tokens": 74,
+  "completion_tokens": 16,
+  "prompt_tokens_details": null,
+  "reasoning_tokens": 16,
+  "completion_tokens_details": {
+   "reasoning_tokens": 16
+  }
+ },
+ "request_b64": "eyJtb2RlbCI6IlF3ZW4vUXdlbjMuOC0yN0IiLCJtZXNzYWdlcyI6W3sicm9sZSI6InVzZXIiLCJjb250ZW50IjoiUmVwbHkgd2l0aCBvbmUgd29yZDogaGVsbG8ifV0sIm1heF90b2tlbnMiOjE2LCJ0ZW1wZXJhdHVyZSI6MCwic3RyZWFtIjpmYWxzZX0=",
+ "response_b64": "eyJpZCI6IjIxMzIwYjUyNTk5MTQ2NzZiNjUyYmY3NTNlMGFjYjFjIiwib2JqZWN0IjoiY2hhdC5jb21wbGV0aW9uIiwiY2hvaWNlcyI6W3siaW5kZXgiOjAsIm1lc3NhZ2UiOnsicm9sZSI6ImFzc2lzdGFudCIsImNvbnRlbnQiOm51bGwsInJlYXNvbmluZ19jb250ZW50IjoiVGhlIHVzZXIgd2FudHMgbWUgdG8gcmVwbHkgd2l0aCBvbmUgd29yZCBpbiByZXNwb25zZSB0byBcImhlbGxvXCIuIFRoZSJ9LCJmaW5pc2hfcmVhc29uIjoibGVuZ3RoIiwibG9ncHJvYnMiOm51bGx9XSwibW9kZWwiOiJRd2VuL1F3ZW4zLjgtMjdCIiwiY3JlYXRlZCI6MTc5MzU1MjE3OSwidXNhZ2UiOnsicHJvbXB0X3Rva2VucyI6NTgsInRvdGFsX3Rva2VucyI6NzQsImNvbXBsZXRpb25fdG9rZW5zIjoxNiwicHJvbXB0X3Rva2Vuc19kZXRhaWxzIjpudWxsLCJyZWFzb25pbmdfdG9rZW5zIjoxNiwiY29tcGxldGlvbl90b2tlbnNfZGV0YWlscyI6eyJyZWFzb25pbmdfdG9rZW5zIjoxNn19fQ==",
+ "request_hash": "75947b824e6dc3ecc863c82a6ee32601806d8247a6fcbdc819063700efac3031",
+ "response_hash": "2ff07dd89fbb69f49578f026bb1f132f9082a772619e40c9cdb9ff548d451283",
+ "signature": {
+  "text": "Qwen/Qwen3.8-27B:75947b824e6dc3ecc863c82a6ee32601806d8247a6fcbdc819063700efac3031:2ff07dd89fbb69f49578f026bb1f132f9082a772619e40c9cdb9ff548d451283",
+  "signature": "0x66528b8b195b6ce203147826cb7348778234a15b9b66e61d9350dfedbf30b0db4af05e90705aad29c17188ba0bad77caf1d739e19a4a2fd06f2a28b70af230511c",
+  "signing_address": "0x835ab53d20294ef795906dff21ae4c045336aa26",
+  "signing_algo": "ecdsa",
+  "signature_kind": "provider_tee"
+ },
+ "attestation": {
+  "report_sha256": "fd320d9f17de6c99f28c168ffd429af6859cd0e6a81e1a31c813aeca07810672",
+  "nonce": "e27d3ba6dafe2cd7b795f7faf812520f51b0d836b22eaca3c56116d95df43a96",
+  "fetched_at": "2026-11-01T16:55:57.714Z"
+ },
+ "anchored": {
+  "network": "testnet",
+  "contract": "tee-receipts-chamdom.testnet",
+  "receipt_id": 0,
+  "tx_hash": "BGqt67ivp3aGNKLwBMtyjJdhLnzZs1m1pyo8r7hpNGiK"
+ }
+}
