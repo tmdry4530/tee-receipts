@@ -35,9 +35,13 @@ test('fixtures contain no secrets (no API key, no auth header in receipt bundles
   }
 });
 
-test('saved REAL receipt bundle verifies off-chain', { skip: !existsSync(realBundleFile) && 'no real receipt fixture yet' }, () => {
+test('saved REAL receipt bundle verifies off-chain', () => {
+  assert.ok(existsSync(realBundleFile), 'fixtures/demo/receipt-bundle.json (real NEAR AI receipt) is missing');
   const b = JSON.parse(readFileSync(realBundleFile, 'utf8'));
   assert.equal(b.simulated, false);
+  assert.ok(!b.warning);
+  assert.equal(b.signature.signature_kind, 'provider_tee');
+  assert.equal(b.attestation.report_sha256, evidence.report_sha256);
   assert.ok(checkBundleOffchain(b).every((r) => r.ok));
 });
 

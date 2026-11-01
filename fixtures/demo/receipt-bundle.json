@@ -1,0 +1,40 @@
+{
+  "type": "tee-receipts/receipt-bundle/v1",
+  "simulated": false,
+  "model": "Qwen/Qwen3.8-27B",
+  "chat_id": "a69bd30e3ab44eac9cdbcf75ef74d4e2",
+  "created_at": "2026-11-01T16:51:32.540Z",
+  "usage": {
+    "prompt_tokens": 70,
+    "total_tokens": 167,
+    "completion_tokens": 97,
+    "prompt_tokens_details": null,
+    "reasoning_tokens": 71,
+    "completion_tokens_details": {
+      "reasoning_tokens": 71
+    }
+  },
+  "request_b64": "eyJtb2RlbCI6IlF3ZW4vUXdlbjMuOC0yN0IiLCJtZXNzYWdlcyI6W3sicm9sZSI6InVzZXIiLCJjb250ZW50IjoiSW4gb25lIHNob3J0IHNlbnRlbmNlOiB3aGF0IGRvZXMgYSBURUUgYXR0ZXN0YXRpb24gcHJvdmU/IC9ub190aGluayJ9XSwibWF4X3Rva2VucyI6NDAwLCJ0ZW1wZXJhdHVyZSI6MCwic3RyZWFtIjpmYWxzZX0=",
+  "response_b64": "eyJpZCI6ImE2OWJkMzBlM2FiNDRlYWM5Y2RiY2Y3NWVmNzRkNGUyIiwib2JqZWN0IjoiY2hhdC5jb21wbGV0aW9uIiwiY2hvaWNlcyI6W3siaW5kZXgiOjAsIm1lc3NhZ2UiOnsicm9sZSI6ImFzc2lzdGFudCIsImNvbnRlbnQiOiJcblxuQSBURUUgYXR0ZXN0YXRpb24gcHJvdmVzIHRoYXQgeW91ciBjb2RlIGFuZCBkYXRhIHJhbiBpbnNpZGUgYSBoYXJkd2FyZS1pc29sYXRlZCwgaW50ZWdyaXR5LXZlcmlmaWVkIHNlY3VyZSBlbnZpcm9ubWVudC4iLCJyZWFzb25pbmdfY29udGVudCI6IldlIG5lZWQgdG8gYW5zd2VyIHVzZXI6IFwiSW4gb25lIHNob3J0IHNlbnRlbmNlOiB3aGF0IGRvZXMgYSBURUUgYXR0ZXN0YXRpb24gcHJvdmU/IC9ub190aGlua1wiLiBOZWVkIGZpbmFsIG9uZSBzaG9ydCBzZW50ZW5jZS4gTmVlZCBsaWtlbHkgY29uY2lzZTogSXQgcHJvdmVzIGNvZGUvZGF0YSByYW4gaW4gYSB0cnVzdGVkIGhhcmR3YXJlIGVuY2xhdmUgd2l0aCBtZWFzdXJlZCBpbnRlZ3JpdHkgYW5kIGNvbmZpZGVudGlhbGl0eS4gTmVlZCBtYXliZSBtZW50aW9uIHJlbW90ZSBhdHRlc3RhdGlvbiB2ZXJpZmllcyBURUUgc3RhdGUuIE9uZSBzZW50ZW5jZS4gRW5zdXJlIHNob3J0LlxuIn0sImZpbmlzaF9yZWFzb24iOiJzdG9wIiwibG9ncHJvYnMiOm51bGwsIm1hdGNoZWRfc3RvcCI6MjQ4MDQ2fV0sIm1vZGVsIjoiUXdlbi9Rd2VuMy44LTI3QiIsImNyZWF0ZWQiOjE3OTM1NTE4ODgsInVzYWdlIjp7InByb21wdF90b2tlbnMiOjcwLCJ0b3RhbF90b2tlbnMiOjE2NywiY29tcGxldGlvbl90b2tlbnMiOjk3LCJwcm9tcHRfdG9rZW5zX2RldGFpbHMiOm51bGwsInJlYXNvbmluZ190b2tlbnMiOjcxLCJjb21wbGV0aW9uX3Rva2Vuc19kZXRhaWxzIjp7InJlYXNvbmluZ190b2tlbnMiOjcxfX19",
+  "request_hash": "453bafcfbdb9982800dc8eb7a3e8b9e1798477f56a39265a5c4ebf5b496f5dbe",
+  "response_hash": "1ac82433853229a15479f1fc59e6e72950d36b71ef33a7fecb484330f6f982b6",
+  "signature": {
+    "text": "Qwen/Qwen3.8-27B:453bafcfbdb9982800dc8eb7a3e8b9e1798477f56a39265a5c4ebf5b496f5dbe:1ac82433853229a15479f1fc59e6e72950d36b71ef33a7fecb484330f6f982b6",
+    "signature": "0x81d9a46a715c41815ba4bebef481c03a8ec8efd07f8a4fadc2042cd06a2a93ac33ff762d364489be4d64279d18ca672369ed9c37996f1a95447b78be50b271dd1b",
+    "signing_address": "0x835ab53d20294ef795906dff21ae4c045336aa26",
+    "signing_algo": "ecdsa",
+    "signature_kind": "provider_tee"
+  },
+  "attestation": {
+    "report_sha256": "8877d63b7954f6754dcf8b3047093c2bd67613996c59416492c0403710f3cd50",
+    "nonce": "64d7cf4f5ba2094a6798759e0f9ca6b9198338f964c195ea95dbbac85382c2ee",
+    "fetched_at": "2026-11-01T16:51:25.898Z"
+  },
+  "anchored": {
+    "network": "local-sandbox",
+    "contract": "receipts.sandbox",
+    "receipt_id": 0,
+    "tx_hash": "BGbrTzkrjrB8U6EH5FVNo5kwMSpsmnX1h6uDmhdJmxUu",
+    "note": "local sandbox; gone when the node stops"
+  }
+}

@@ -14,8 +14,8 @@ const argv = process.argv.slice(2);
 const opt = (name, dflt) => { const i = argv.indexOf(`--${name}`); return i >= 0 ? argv[i + 1] : dflt; };
 const mode = argv.includes('--live') ? 'live' : argv.includes('--simulated') ? 'simulated' : 'replay';
 const model = opt('model', 'Qwen/Qwen3.8-27B');
-const prompt = opt('prompt', 'In one short sentence: what does a TEE attestation prove?');
-const maxTokens = Number(opt('max-tokens', '64'));
+const prompt = opt('prompt', 'In one short sentence: what does a TEE attestation prove? /no_think');
+const maxTokens = Number(opt('max-tokens', '400'));
 const FIX = new URL('../../fixtures/demo/', import.meta.url);
 
 let step = 0;
@@ -79,7 +79,9 @@ try {
   }
   const answer = JSON.parse(bundleBytes(bundle).responseBytes.toString('utf8'));
   console.log(`  chat_id ${bundle.chat_id}  usage ${JSON.stringify(bundle.usage)}`);
-  console.log(`  answer: ${JSON.stringify(answer.choices?.[0]?.message?.content ?? '').slice(0, 160)}`);
+  const msg = answer.choices?.[0]?.message ?? {};
+  console.log(`  answer: ${JSON.stringify(msg.content ?? '').slice(0, 160)}${answer.choices?.[0]?.finish_reason === 'length' ? '  (cut off by max_tokens)' : ''}`);
+  if (!msg.content && msg.reasoning_content) console.log(`  reasoning (model spent its tokens thinking): ${JSON.stringify(msg.reasoning_content).slice(0, 160)}`);
   console.log(`  signed text: ${bundle.signature.text}`);
   console.log(`  signer ${bundle.signature.signing_address} (${bundle.signature.signature_kind}, ${bundle.signature.signing_algo})`);
 
