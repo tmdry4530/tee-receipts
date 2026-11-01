@@ -6,3 +6,7 @@ target/
 *.log
 .DS_Store
 .tee-receipts/
+.near-credentials/
+*.key
+*.pem
+credentials*.json
