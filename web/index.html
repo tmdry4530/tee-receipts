@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TEE Receipts · verify a NEAR AI receipt</title>
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<header>
+  <h1>TEE Receipts <span class="sub">verify a NEAR AI Cloud receipt in your browser</span></h1>
+  <p class="lead">Paste or load a receipt bundle. This page re-hashes the exact request/response bytes, checks the TEE signature
+  with <code>secp256k1</code> right here, then asks the NEAR contract (read-only view calls, no wallet, no key) whether a receipt
+  for those bytes was anchored by an attested signer.</p>
+</header>
+
+<main>
+  <section class="card" id="input">
+    <h2>1 · Receipt bundle</h2>
+    <div class="row">
+      <button id="load-default" type="button">Load testnet receipt #0</button>
+      <label class="file">Open bundle JSON… <input id="file" type="file" accept=".json,application/json"></label>
+      <button id="load-paste" type="button" class="ghost">Use pasted JSON</button>
+    </div>
+    <textarea id="paste" rows="3" placeholder='Paste a tee-receipts/receipt-bundle/v1 JSON here, then "Use pasted JSON"'></textarea>
+    <details>
+      <summary>Network</summary>
+      <div class="row">
+        <label>RPC <input id="rpc" size="38"></label>
+        <label>Contract <input id="contract" size="32"></label>
+      </div>
+    </details>
+    <p id="load-status" class="muted"></p>
+  </section>
+
+  <section class="card" id="bytes">
+    <h2>2 · What the TEE answered</h2>
+    <dl class="meta">
+      <dt>Model</dt><dd id="m-model">–</dd>
+      <dt>Prompt</dt><dd id="m-prompt">–</dd>
+      <dt>Reply</dt><dd id="m-reply">–</dd>
+      <dt>TEE signer</dt><dd id="m-signer">–</dd>
+    </dl>
+    <label class="block">Exact response bytes (UTF-8, editable: change anything and re-verify)
+      <textarea id="resp" rows="5" spellcheck="false"></textarea></label>
+    <details><summary>Exact request bytes</summary>
+      <textarea id="req" rows="3" spellcheck="false"></textarea></details>
+    <div class="row">
+      <button id="verify" type="button" class="primary">Verify</button>
+      <button id="tamper" type="button" class="danger">Tamper one byte</button>
+      <button id="reset" type="button" class="ghost">Reset bytes</button>
+      <span id="tamper-note" class="muted"></span>
+    </div>
+  </section>
+
+  <section class="card" id="result">
+    <div id="verdict" class="verdict idle">Not checked yet</div>
+    <ol id="checks" class="checks"></ol>
+    <div id="receipt" class="receipt"></div>
+  </section>
+
+  <section class="card" id="history">
+    <h2>3 · Signer history on-chain</h2>
+    <p class="muted">Every attested TEE signing key the contract owner ever registered for this model. Entries are never deleted,
+    so a receipt still verifies after the enclave rotates its key or the registration expires.</p>
+    <table><thead><tr><th>#</th><th>Kind</th><th>Signing address</th><th>Attestation (sha256)</th><th>Registered (UTC)</th><th>Expires (UTC)</th><th>Status</th></tr></thead>
+    <tbody id="hist-body"><tr><td colspan="7" class="muted">–</td></tr></tbody></table>
+  </section>
+
+  <section class="card small">
+    <h2>What is checked where</h2>
+    <ul>
+      <li><b>Browser:</b> sha256 of the bytes, the signed text <code>model:sha256(req):sha256(resp)</code>, EIP-191 ecrecover (vendored <code>@noble/curves</code>).</li>
+      <li><b>NEAR contract (view calls):</b> <code>verify_receipt</code>, <code>check_response_signature</code> (the contract runs ecrecover itself), <code>get_signer_history</code>.</li>
+      <li><b>Not here:</b> Intel TDX / NVIDIA attestation evidence is verified off-chain by the CLI before a signer is registered; the on-chain attestation hash lets anyone redo that from the saved report (<code>fixtures/testnet/attestation-evidence.json</code>).</li>
+      <li>This page sends nothing except read-only JSON-RPC <code>query</code> requests to the RPC above. Prompt and reply never leave your browser.</li>
+    </ul>
+  </section>
+</main>
+<footer><a href="https://github.com/tmdry4530/tee-receipts">github.com/tmdry4530/tee-receipts</a> · MIT · built at NEAR HACKATHON</footer>
+<script type="module" src="./app.js"></script>
+</body>
+</html>

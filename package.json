@@ -22,7 +22,9 @@
     "test": "node --test --test-concurrency=1 tests/*.test.mjs",
     "test:contract": "cd contracts/receipts && cargo test",
     "deploy:testnet": "node client/scripts/deploy-testnet.mjs",
-    "build:contract": "cd contracts/receipts && cargo near build non-reproducible-wasm --no-abi && cp target/near/tee_receipts_contract.wasm res/"
+    "build:contract": "cd contracts/receipts && cargo near build non-reproducible-wasm --no-abi && cp target/near/tee_receipts_contract.wasm res/",
+    "web": "node client/scripts/serve-web.mjs",
+    "test:web": "node client/scripts/test-web.mjs"
   },
   "dependencies": {
     "@phala/dcap-qvl": "^0.7.0",
@@ -30,5 +32,8 @@
     "near-api-js": "^7.4.0",
     "near-sandbox": "^0.3.4",
     "tweetnacl": "^1.0.3"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.64.1"
   }
 }
